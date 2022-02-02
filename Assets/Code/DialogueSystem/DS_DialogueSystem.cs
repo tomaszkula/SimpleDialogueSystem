@@ -62,7 +62,7 @@ public class DS_DialogueSystem : MonoBehaviour
         playCoroutine = instance.StartCoroutine(playDialogueScene(_dialogueScene));
     }
 
-    private static void Stop()
+    public static void Stop()
     {
         if(playCoroutine != null)
         {
@@ -127,6 +127,13 @@ public class DS_DialogueSystem : MonoBehaviour
             yield break;
         }
 
+        yield return typeMessage(_message);
+
+        yield return waitForContinue();
+    }
+
+    private static IEnumerator typeMessage(string _message)
+    {
         instance.messageTMP.text = _message;
         instance.messageTMP.maxVisibleCharacters = 0;
         for (int i = 0; i < _message.Length; i++)
@@ -134,8 +141,11 @@ public class DS_DialogueSystem : MonoBehaviour
             instance.messageTMP.maxVisibleCharacters = i + 1;
             yield return typeMessageLetterWaiter;
         }
+    }
 
-        if(waitForInputToContinue)
+    private static IEnumerator waitForContinue()
+    {
+        if (waitForInputToContinue)
         {
             yield return new WaitUntil(() => DS_Inputs.SkipDialogue);
         }
